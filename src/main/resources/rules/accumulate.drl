@@ -1,0 +1,94 @@
+package com.uncia.unciacivilaccumulate.model
+import com.uncia.unciacivilaccumulate.model.Account;
+import com.uncia.unciacivilaccumulate.model.Cibil;
+global com.uncia.unciacivilaccumulate.model.Response response;
+
+dialect "mvel"
+
+rule "Civil Dev-1"
+    when
+        $c: Cibil($accounts: listOfAccount)
+       totalOverDue : Number() from accumulate(
+          
+           Account((ownership != "02" && ownership != "03"), (loanType != "07" && loanType != "53" && loanType != "57"), $q: od ) from $accounts,
+            init(int count = 0;),
+            action(count += $q;),
+            reverse(count -= $q;),
+            result(count)
+        )
+    then
+          //cibil.setIndi_Joint_No_Gold_agri_Loan_OD(totalOverDue);
+          response.setIndi_Joint_No_Gold_agri_Loan_OD(totalOverDue);
+          //System.out.println("Indi_Joint_No_Gold_agri_Loan_OD >> " + cibil.getIndi_Joint_No_Gold_agri_Loan_OD());
+end
+
+
+
+rule "Civil Dev-2"
+    when
+        $c: Cibil($accounts: listOfAccount)
+       totalOverDue : Number() from accumulate(
+           
+           Account((ownership == "01" || ownership == "04"), (loanType == "07" || loanType == "53" || loanType == "57"), $q: od ) from $accounts,
+            init(int count = 0;),
+            action(count += $q;),
+            reverse(count -= $q;),
+            result(count)
+        )
+    then
+          //cibil.setIndi_Joint_Gold_agri_Loan_OD(totalOverDue);
+          response.setIndi_Joint_Gold_agri_Loan_OD(totalOverDue);
+          //System.out.println("Indi_Joint_Gold_agri_Loan_OD >> " + cibil.getIndi_Joint_Gold_agri_Loan_OD());
+end
+
+rule "Civil Dev-3"
+    when
+        $c: Cibil($accounts: listOfAccount)
+       totalOverDue : Number() from accumulate(
+          
+            Account((ownership == "03"), $q: od ) from $accounts,
+           //Account(((ownership == "03") && (loanType == "07" || loanType == "53" || loanType == "57")), $q: od ) from $accounts,
+           //Account( driver == person, (reason != "SPEEDING1" && reason != "SPEEDING2"), (driverType == "Self"),ticketAmount : amount   $q: od ) from $accounts,
+            init(int count = 0;),
+            action(count += $q;),
+            reverse(count -= $q;),
+            result(count)
+        )
+    then
+          //cibil.setAll_Guarantor_OD(totalOverDue);
+          response.setAll_Guarantor_OD(totalOverDue);
+          //System.out.println("All_Guarantor_OD >> " + cibil.getAll_Guarantor_OD());
+end
+
+rule "Civil Dev-4"
+    when
+        $c: Cibil($accounts: listOfAccount)
+       totalOverDue : Number() from accumulate(
+            Account((ownership == "1" || ownership == "4"), $q: od ) from $accounts,
+            init(int count = 0;),
+            action(count += $q;),
+            reverse(count -= $q;),
+            result(count)
+        )
+    then
+          //cibil.setAll_Indi_Joint_OD(totalOverDue);
+          response.setAll_Indi_Joint_OD(totalOverDue);
+          //System.out.println("All_Indi_Joint_OD >> " + cibil.getAll_Indi_Joint_OD());
+end
+
+rule "Civil Dev-6"
+    when
+    
+        $c: Cibil($accounts: listOfAccount)
+       totalOverDue : Number() from accumulate(
+            Account($q: od ) from $accounts,
+            init(int count = 0;),
+            action(count += $q;),
+            reverse(count -= $q;),
+            result(count)
+        )
+    then
+          //cibil.setAll_All_OD(totalOverDue);
+          response.setAll_All_OD(totalOverDue);
+          //System.out.println("All_All_OD >> " + cibil.getAll_All_OD());
+end
